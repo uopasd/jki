@@ -21,7 +21,7 @@ library.theme = {
     fontsize = 15,
     titlesize = 18,
     font = Enum.Font.Code,
-    background = "rbxassetid://5553946656",
+    background = "rbxassetid://18378192683",
     tilesize = 90,
     cursor = true,
     cursorimg = "rbxassetid://10104198910",
@@ -2026,205 +2026,171 @@ function library:CreateWindow(name, size, hidebutton)
                 return textbox
             end
             
-            function sector:AddSlider(text, min, default, max, decimals, callback, flag)
-                local slider = { }
-                slider.text = text or ""
-                slider.callback = callback or function(value) end
-                slider.min = min or 0
-                slider.max = max or 100
-                slider.decimals = decimals or 3
-                slider.default = default or slider.min
-                slider.flag = flag or text or ""
+            function toggle:AddSlider(min, default, max, decimals, callback, flag)
+    local slider = {}
+    slider.text = text or ""
+    slider.callback = callback or function(value) end
+    slider.min = min or 0
+    slider.max = max or 100
+    slider.decimals = decimals or 2
+    slider.default = default or slider.min
+    slider.flag = flag or ((toggle.text or "") .. tostring(#toggle.Items:GetChildren()))
+    
+    slider.value = slider.default
+    local dragging = false
 
-                slider.value = slider.default
-                local dragging = false
+    slider.Main = Instance.new("TextButton", sector.Items)
+    slider.Main.Name = "slider"
+    slider.Main.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    slider.Main.Position = UDim2.fromOffset(0, 0)
+    slider.Main.BorderSizePixel = 0
+    slider.Main.Size = UDim2.fromOffset(sector.Main.Size.X.Offset - 12, 12)
+    slider.Main.AutoButtonColor = false
+    slider.Main.Text = ""
+    slider.Main.ZIndex = 7
 
-                slider.MainBack = Instance.new("Frame", sector.Items)
-                slider.MainBack.Name = "MainBack"
-                slider.MainBack.ZIndex = 7
-                slider.MainBack.Size = UDim2.fromOffset(sector.Main.Size.X.Offset - 12, 25)
-                slider.MainBack.BorderSizePixel = 0
-                slider.MainBack.BackgroundTransparency = 1
+    slider.InputLabel = Instance.new("TextLabel", slider.Main)
+    slider.InputLabel.BackgroundTransparency = 1
+    slider.InputLabel.Size = slider.Main.Size
+    slider.InputLabel.Font = window.theme.font
+    slider.InputLabel.Text = "0"
+    slider.InputLabel.TextColor3 = Color3.fromRGB(240, 240, 240)
+    slider.InputLabel.Position = slider.Main.Position
+    slider.InputLabel.Selectable = false
+    slider.InputLabel.TextSize = 15
+    slider.InputLabel.ZIndex = 9
+    slider.InputLabel.TextStrokeTransparency = 1
+    slider.InputLabel.TextXAlignment = Enum.TextXAlignment.Center
+    updateevent.Event:Connect(function(theme)
+        slider.InputLabel.Font = theme.font
+        slider.InputLabel.TextColor3 = theme.itemscolor
+    end)
 
-                slider.Label = Instance.new("TextLabel", slider.MainBack)
-                slider.Label.BackgroundTransparency = 1
-                slider.Label.Size = UDim2.fromOffset(sector.Main.Size.X.Offset - 12, 6)
-                slider.Label.Font = window.theme.font
-                slider.Label.Text = slider.text .. ":"
-                slider.Label.TextColor3 = window.theme.itemscolor
-                slider.Label.Position = UDim2.fromOffset(0, 0)
-                slider.Label.TextSize = 15
-                slider.Label.ZIndex = 4
-                slider.Label.TextStrokeTransparency = 1
-                slider.Label.TextXAlignment = Enum.TextXAlignment.Left
-                updateevent.Event:Connect(function(theme)
-                    slider.Label.Font = theme.font
-                    slider.Label.TextColor3 = theme.itemscolor
-                end)
+    slider.BlackOutline2 = Instance.new("Frame", slider.Main)
+    slider.BlackOutline2.Name = "blackline"
+    slider.BlackOutline2.ZIndex = 4
+    slider.BlackOutline2.Size = slider.Main.Size + UDim2.fromOffset(6, 6)
+    slider.BlackOutline2.BorderSizePixel = 0
+    slider.BlackOutline2.BackgroundColor3 = window.theme.outlinecolor2
+    slider.BlackOutline2.Position = UDim2.fromOffset(-3, -3)
+    updateevent.Event:Connect(function(theme)
+        slider.BlackOutline2.BackgroundColor3 = theme.outlinecolor2
+    end)
+    
+    slider.Outline = Instance.new("Frame", slider.Main)
+    slider.Outline.Name = "blackline"
+    slider.Outline.ZIndex = 4
+    slider.Outline.Size = slider.Main.Size + UDim2.fromOffset(4, 4)
+    slider.Outline.BorderSizePixel = 0
+    slider.Outline.BackgroundColor3 = window.theme.outlinecolor
+    slider.Outline.Position = UDim2.fromOffset(-2, -2)
+    updateevent.Event:Connect(function(theme)
+        slider.Outline.BackgroundColor3 = theme.outlinecolor
+    end)
 
-                local size = textservice:GetTextSize(slider.Label.Text, slider.Label.TextSize, slider.Label.Font, Vector2.new(200,300))
-                slider.InputLabel = Instance.new("TextBox", slider.MainBack)
-                slider.InputLabel.BackgroundTransparency = 1
-                slider.InputLabel.ClearTextOnFocus = false
-                slider.InputLabel.Size = UDim2.fromOffset(sector.Main.Size.X.Offset - size.X - 15, 12)
-                slider.InputLabel.Font = window.theme.font
-                slider.InputLabel.Text = "0"
-                slider.InputLabel.TextColor3 = window.theme.itemscolor
-                slider.InputLabel.Position = UDim2.fromOffset(size.X + 3, -3)
-                slider.InputLabel.TextSize = 15
-                slider.InputLabel.ZIndex = 4
-                slider.InputLabel.TextStrokeTransparency = 1
-                slider.InputLabel.TextXAlignment = Enum.TextXAlignment.Left
-                updateevent.Event:Connect(function(theme)
-                    slider.InputLabel.Font = theme.font
-                    slider.InputLabel.TextColor3 = theme.itemscolor
+    slider.BlackOutline = Instance.new("Frame", slider.Main)
+    slider.BlackOutline.Name = "blackline"
+    slider.BlackOutline.ZIndex = 4
+    slider.BlackOutline.Size = slider.Main.Size + UDim2.fromOffset(2, 2)
+    slider.BlackOutline.BorderSizePixel = 0
+    slider.BlackOutline.BackgroundColor3 = window.theme.outlinecolor2
+    slider.BlackOutline.Position = UDim2.fromOffset(-1, -1)
+    updateevent.Event:Connect(function(theme)
+        slider.BlackOutline.BackgroundColor3 = theme.outlinecolor2
+    end)
 
-                    local size = textservice:GetTextSize(slider.Label.Text, slider.Label.TextSize, slider.Label.Font, Vector2.new(200,300))
-                    slider.InputLabel.Size = UDim2.fromOffset(sector.Main.Size.X.Offset - size.X - 15, 12)
-                end)
+    slider.Gradient = Instance.new("UIGradient", slider.Main)
+    slider.Gradient.Rotation = 90
+    slider.Gradient.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0.00, Color3.fromRGB(49, 49, 49)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(41, 41, 41)) })
 
-                slider.Main = Instance.new("TextButton", slider.MainBack)
-                slider.Main.Name = "slider"
-                slider.Main.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-                slider.Main.Position = UDim2.fromOffset(0, 15)
-                slider.Main.BorderSizePixel = 0
-                slider.Main.Size = UDim2.fromOffset(sector.Main.Size.X.Offset - 12, 12)
-                slider.Main.AutoButtonColor = false
-                slider.Main.Text = ""
-                slider.Main.ZIndex = 5
+    slider.SlideBar = Instance.new("Frame", slider.Main)
+    slider.SlideBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    slider.SlideBar.ZIndex = 8
+    slider.SlideBar.BorderSizePixel = 0
+    slider.SlideBar.Size = UDim2.fromOffset(0, slider.Main.Size.Y.Offset)
 
-                slider.BlackOutline2 = Instance.new("Frame", slider.Main)
-                slider.BlackOutline2.Name = "blackline"
-                slider.BlackOutline2.ZIndex = 4
-                slider.BlackOutline2.Size = slider.Main.Size + UDim2.fromOffset(6, 6)
-                slider.BlackOutline2.BorderSizePixel = 0
-                slider.BlackOutline2.BackgroundColor3 = window.theme.outlinecolor2
-                slider.BlackOutline2.Position = UDim2.fromOffset(-3, -3)
-                updateevent.Event:Connect(function(theme)
-                    slider.BlackOutline2.BackgroundColor3 = theme.outlinecolor2
-                end)
-                
-                slider.Outline = Instance.new("Frame", slider.Main)
-                slider.Outline.Name = "blackline"
-                slider.Outline.ZIndex = 4
-                slider.Outline.Size = slider.Main.Size + UDim2.fromOffset(4, 4)
-                slider.Outline.BorderSizePixel = 0
-                slider.Outline.BackgroundColor3 = window.theme.outlinecolor
-                slider.Outline.Position = UDim2.fromOffset(-2, -2)
-                updateevent.Event:Connect(function(theme)
-                    slider.Outline.BackgroundColor3 = theme.outlinecolor
-                end)
+    slider.Gradient2 = Instance.new("UIGradient", slider.SlideBar)
+    slider.Gradient2.Rotation = 90
+    slider.Gradient2.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0.00, window.theme.accentcolor), ColorSequenceKeypoint.new(1.00, window.theme.accentcolor2) })
+    updateevent.Event:Connect(function(theme)
+        slider.Gradient2.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0.00, theme.accentcolor), ColorSequenceKeypoint.new(1.00, theme.accentcolor2) })
+    end)
 
-                slider.BlackOutline = Instance.new("Frame", slider.Main)
-                slider.BlackOutline.Name = "blackline"
-                slider.BlackOutline.ZIndex = 4
-                slider.BlackOutline.Size = slider.Main.Size + UDim2.fromOffset(2, 2)
-                slider.BlackOutline.BorderSizePixel = 0
-                slider.BlackOutline.BackgroundColor3 = window.theme.outlinecolor2
-                slider.BlackOutline.Position = UDim2.fromOffset(-1, -1)
-                updateevent.Event:Connect(function(theme)
-                    slider.BlackOutline.BackgroundColor3 = theme.outlinecolor2
-                end)
+    slider.BlackOutline2.MouseEnter:Connect(function()
+        slider.BlackOutline2.BackgroundColor3 = window.theme.accentcolor
+    end)
+    slider.BlackOutline2.MouseLeave:Connect(function()
+        slider.BlackOutline2.BackgroundColor3 = window.theme.outlinecolor2
+    end)
 
-                slider.Gradient = Instance.new("UIGradient", slider.Main)
-                slider.Gradient.Rotation = 90
-                slider.Gradient.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0.00, Color3.fromRGB(49, 49, 49)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(41, 41, 41)) })
+    if slider.flag and slider.flag ~= "" then
+        library.flags[slider.flag] = slider.default or slider.min or 0
+    end
 
-                slider.SlideBar = Instance.new("Frame", slider.Main)
-                slider.SlideBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255) --Color3.fromRGB(204, 0, 102)
-                slider.SlideBar.ZIndex = 5
-                slider.SlideBar.BorderSizePixel = 0
-                slider.SlideBar.Size = UDim2.fromOffset(0, slider.Main.Size.Y.Offset)
+    function slider:Get()
+        return slider.value
+    end
 
-                slider.Gradient2 = Instance.new("UIGradient", slider.SlideBar)
-                slider.Gradient2.Rotation = 90
-                slider.Gradient2.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0.00, window.theme.accentcolor), ColorSequenceKeypoint.new(1.00, window.theme.accentcolor2) })
-                updateevent.Event:Connect(function(theme)
-                    slider.Gradient2.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0.00, theme.accentcolor), ColorSequenceKeypoint.new(1.00, theme.accentcolor2) })
-                end)
+    function slider:Set(value)
+        local multiplier = 10 ^ slider.decimals
+        slider.value = math.clamp(math.floor(value * multiplier + 0.5) / multiplier, slider.min, slider.max)
+        local percent = 1 - ((slider.max - slider.value) / (slider.max - slider.min))
+        if slider.flag and slider.flag ~= "" then
+            library.flags[slider.flag] = slider.value
+        end
+        slider.SlideBar:TweenSize(UDim2.fromOffset(percent * slider.Main.AbsoluteSize.X, slider.Main.AbsoluteSize.Y), Enum.EasingDirection.In, Enum.EasingStyle.Sine, 0.05)
+        slider.InputLabel.Text = tostring(slider.value)
+        pcall(slider.callback, slider.value)
+    end
+    slider:Set(slider.default)
 
-                slider.BlackOutline2.MouseEnter:Connect(function()
-                    slider.BlackOutline2.BackgroundColor3 = window.theme.accentcolor
-                end)
-                slider.BlackOutline2.MouseLeave:Connect(function()
-                    slider.BlackOutline2.BackgroundColor3 = window.theme.outlinecolor2
-                end)
+    function slider:Refresh()
+        local mousePos = camera:WorldToViewportPoint(mouse.Hit.p)
+        local percent = math.clamp(mousePos.X - slider.Main.AbsolutePosition.X, 0, slider.Main.AbsoluteSize.X) / slider.Main.AbsoluteSize.X
+        local value = slider.min + (slider.max - slider.min) * percent
+        local multiplier = 10 ^ slider.decimals
+        value = math.floor(value * multiplier + 0.5) / multiplier
+        value = math.clamp(value, slider.min, slider.max)
+        slider:Set(value)
+    end
 
-                if slider.flag and slider.flag ~= "" then
-                    library.flags[slider.flag] = slider.default or slider.min or 0
-                end
+    slider.SlideBar.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            slider:Refresh()
+        end
+    end)
 
-                function slider:Get()
-                    return slider.value
-                end
+    slider.SlideBar.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
+    end)
 
-                function slider:Set(value)
-                    slider.value = math.clamp(math.round(value * slider.decimals) / slider.decimals, slider.min, slider.max)
-                    local percent = 1 - ((slider.max - slider.value) / (slider.max - slider.min))
-                    if slider.flag and slider.flag ~= "" then
-                        library.flags[slider.flag] = slider.value
-                    end
-                    slider.SlideBar:TweenSize(UDim2.fromOffset(percent * slider.Main.AbsoluteSize.X, slider.Main.AbsoluteSize.Y), Enum.EasingDirection.In, Enum.EasingStyle.Sine, 0.05)
-					slider.InputLabel.Text = slider.value
-					pcall(slider.callback, slider.value)
-				end
-                slider:Set(slider.default)
+    slider.Main.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            slider:Refresh()
+        end
+    end)
 
-                slider.InputLabel.FocusLost:Connect(function(Return)
-                    if not Return then 
-                        return 
-                    end
-                    if (slider.InputLabel.Text:match("^%d+$")) then
-                        slider:Set(tonumber(slider.InputLabel.Text))
-                    else
-                        slider.InputLabel.Text = tostring(slider.value)
-                    end
-                end)
+    slider.Main.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
+    end)
 
-                function slider:Refresh()
-                    local mousePos = camera:WorldToViewportPoint(mouse.Hit.p)
-                    local percent = math.clamp(mousePos.X - slider.SlideBar.AbsolutePosition.X, 0, slider.Main.AbsoluteSize.X) / slider.Main.AbsoluteSize.X
-                    local value = math.floor((slider.min + (slider.max - slider.min) * percent) * slider.decimals) / slider.decimals
-                    value = math.clamp(value, slider.min, slider.max)
-                    slider:Set(value)
-                end
+    uis.InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            slider:Refresh()
+        end
+    end)
 
-                slider.SlideBar.InputBegan:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                        dragging = true
-                        slider:Refresh()
-                    end
-                end)
+    sector:FixSize()
+    table.insert(library.items, slider)
+    return slider
+end
 
-                slider.SlideBar.InputEnded:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                        dragging = false
-                    end
-                end)
-
-                slider.Main.InputBegan:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                        dragging = true
-                        slider:Refresh()
-                    end
-                end)
-
-                slider.Main.InputEnded:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                        dragging = false
-                    end
-                end)
-
-				uis.InputChanged:Connect(function(input)
-					if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-                        slider:Refresh()
-					end
-				end)
-
-                sector:FixSize()
-                table.insert(library.items, slider)
-                return slider
-            end
 
             function sector:AddColorpicker(text, default, callback, flag)
                 local colorpicker = { }
